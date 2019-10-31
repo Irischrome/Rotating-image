@@ -1,0 +1,46 @@
+
+
+
+
+
+clear all; 
+img=imread('lena512.bmp'); %reading image
+[rowsi,colsi,z]= size(img); %dimension of image are stored in respective variables
+angle=26; %last two digits of id number
+rads=2*pi*angle/360; %converting the angle to radians
+
+%calculating array dimesions such that  rotated image gets fit in it exactly.
+% we are using absolute so that we get  positve value in any case ie.,any quadrant.
+
+rowsf=ceil(rowsi*abs(cos(rads))+colsi*abs(sin(rads))); %the required row size of final image is calculated                     
+colsf=ceil(rowsi*abs(sin(rads))+colsi*abs(cos(rads))); %the required column size of final image is calculated                  
+
+% define an array withcalculated dimensionsand fill the array  with zeros ie.,black
+C=uint8(zeros([rowsf colsf 3 ]));
+
+%calculating center of original and final image
+xo=ceil(rowsi/2);                                                            
+yo=ceil(colsi/2);
+
+midx=ceil((size(C,1))/2); %mid-point of final image
+midy=ceil((size(C,2))/2); %mid-point of final image
+
+% in this loop we calculate corresponding coordinates of pixel of A 
+% for each pixel of C, and its intensity will be  assigned after checking
+% weather it lie in the bound of A (original image)
+for i=1:size(C,1)
+    for j=1:size(C,2)                                                       
+
+         x= (i-midx)*cos(rads)+(j-midy)*sin(rads);  %finding x-coordinate in original image for each pixel in final image                                    
+         y= -(i-midx)*sin(rads)+(j-midy)*cos(rads); %finding y-coordinate in original image for each pixel in final image                           
+         x=round(x)+xo; %shifting about mid-point to centre the image
+         y=round(y)+yo; %shifting about mid-point to centre the image
+
+         if (x>=1 && y>=1 && x<=size(img,1) &&  y<=size(img,2) ) 
+              C(i,j,:)=img(x,y,:); %final intensity mapping 
+         end
+
+    end
+end
+
+imshow(C), title('Rotated');
